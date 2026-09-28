@@ -35,8 +35,23 @@ política de execução. Se preferir o terminal, use `.\scripts\install.ps1` e `
 (se aparecer “a execução de scripts foi desabilitada”, rode
 `powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1`).
 
-Depois, edite `backend\.env` (Bloco de Notas) e troque `TIKTOK_USERNAME` pelo perfil que você quer
-monitorar e `PROVIDER` pelo provedor real ([CONFIGURACAO.md](docs/CONFIGURACAO.md#provedores)).
+> **Atenção:** com `PROVIDER=mock` (padrão) o programa **não lê o TikTok** — é só simulação, e o painel
+> mostra um aviso amarelo. Reposts de verdade só aparecem depois do passo abaixo.
+
+**Monitorar de verdade:** crie uma conta grátis em https://apify.com, copie o token em
+*Settings → API & Integrations* e edite `backend\.env` no Bloco de Notas:
+
+```ini
+TIKTOK_USERNAME=seu_arroba_sem_o_arroba
+PROVIDER=apify
+APIFY_TOKEN=cole_o_token_aqui
+POLL_INTERVAL_SECONDS=600
+```
+
+Feche e abra o `iniciar.bat`. A primeira leitura registra os reposts que já existem sem avisar; os
+reposts feitos depois disso geram a notificação. Para testar e ver os reposts atuais logo de cara,
+acrescente `BASELINE_ON_FIRST_RUN=false` (depois volte para `true`). Outros provedores:
+[CONFIGURACAO.md](docs/CONFIGURACAO.md#provedores).
 Para iniciar junto com o Windows: `powershell -ExecutionPolicy Bypass -File .\scripts\register-autostart.ps1`.
 
 ### Linux / macOS

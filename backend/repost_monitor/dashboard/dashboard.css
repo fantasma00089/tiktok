@@ -24,6 +24,7 @@
 }
 
 * { box-sizing: border-box; }
+[hidden] { display: none !important; }
 
 body {
   margin: 0;
@@ -109,3 +110,7 @@ dd { margin: 2px 0 0; font-weight: 600; overflow-wrap: anywhere; }
   .latest img { width: 90px; }
   .history li { flex-direction: column; gap: 2px; }
 }
+
+.sim-warning { border-color: var(--warn); background: color-mix(in srgb, var(--warn) 12%, var(--surface)); }
+.sim-warning p { margin: 6px 0 0; }
+.sim-warning code { font-size: 13px; }

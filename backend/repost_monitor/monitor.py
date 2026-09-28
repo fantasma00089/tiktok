@@ -56,7 +56,7 @@ class Monitor:
         self.bus = bus or EventBus()
         self.notify = notify
         self.store = StateStore(settings.state_file)
-        self.state: MonitorState = self.store.load(settings.target_label)
+        self.state: MonitorState = self.store.load(settings.state_key)
         self.running = False
         self._lock = asyncio.Lock()
         self._wake = asyncio.Event()
@@ -139,6 +139,9 @@ class Monitor:
         self.running = True
         log.info("Monitorando reposts de %s via provedor '%s' a cada ~%ss.",
                  self.settings.target_label, self.provider.name, self.settings.poll_interval)
+        if self.settings.is_simulation:
+            log.warning("MODO SIMULAÇÃO (PROVIDER=mock): o TikTok NÃO está sendo consultado; "
+                        "reposts reais não aparecem. Configure PROVIDER=apify e APIFY_TOKEN no backend/.env.")
         netlify_task = asyncio.create_task(self.netlify.run()) if self.netlify else None
         if self.netlify:
             self.netlify.request_publish()  # publica o estado inicial

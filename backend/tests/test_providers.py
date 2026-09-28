@@ -142,3 +142,39 @@ def test_tiktok_research_provider(settings: Settings):
             return await build_provider(settings, client).fetch_reposts()
 
     assert [r.item_id for r in asyncio.run(go())] == ["5"]
+
+
+def test_apify_defaults_only_need_token(settings: Settings):
+    import asyncio
+    seen = {}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen["path"] = request.url.path
+        seen["auth"] = request.headers["authorization"]
+        seen["body"] = json.loads(request.content)
+        seen["timeout"] = request.extensions["timeout"]["read"]
+        return httpx.Response(200, json=[
+            {"postUrl": "https://www.tiktok.com/@criador/video/7400000000000000001", "author": "criador"},
+        ])
+
+    settings.provider = "apify"
+    settings.provider_options = {"token": "apify_tok", "actor": "", "input": None, "items_path": ""}
+
+    async def go():
+        async with _client(handler) as client:
+            return await build_provider(settings, client).fetch_reposts()
+
+    reposts = asyncio.run(go())
+    assert seen["path"] == "/v2/acts/maximedupre~tiktok-reposts/run-sync-get-dataset-items"
+    assert seen["auth"] == "Bearer apify_tok"
+    assert seen["body"] == {"profiles": ["https://www.tiktok.com/@alvo_teste"], "maxItemsPerProfile": 10}
+    assert seen["timeout"] >= 300
+    assert [r.item_id for r in reposts] == ["7400000000000000001"]  # ID extraído da URL
+
+
+def test_unrecognized_items_raise_clear_error():
+    from repost_monitor.providers.base import normalize_items
+
+    with pytest.raises(ProviderError, match="nenhum com ID"):
+        normalize_items([{"foo": 1, "bar": 2}])
+    assert normalize_items([]) == []

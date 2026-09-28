@@ -147,3 +147,29 @@ def test_netlify_publisher_uploads_only_required_files(settings, tmp_path):
 
 def test_webhook_signature():
     assert sign("k", b"{}").startswith("sha256=")
+
+
+def test_switching_provider_resets_state(settings):
+    from repost_monitor.state import StateStore
+
+    add_fake_repost(settings.provider_options["file"])
+
+    async def go():
+        monitor = Monitor(settings, notify=False)
+        await monitor.run_cycle()
+        await monitor.aclose()
+
+    asyncio.run(go())
+    store = StateStore(settings.state_file)
+    assert store.load(settings.state_key).initialized
+    settings.provider = "apify"
+    assert not store.load(settings.state_key).initialized  # recomeça com leitura de base
+
+
+def test_status_flags_simulation(settings):
+    with TestClient(_app(settings)) as client:
+        assert client.get("/status").json()["modo_simulacao"] is True
+    settings.provider = "http"
+    settings.provider_options = {"url": "https://x"}
+    with TestClient(_app(settings)) as client:
+        assert client.get("/status").json()["modo_simulacao"] is False

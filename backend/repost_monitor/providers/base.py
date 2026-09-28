@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 import abc
+import logging
+import re
 from datetime import datetime, timezone
 from typing import Any, Iterable
 
@@ -12,9 +14,19 @@ from ..config import Settings
 from ..http import ProviderError
 from ..models import Repost, iso, video_url
 
+log = logging.getLogger(__name__)
+
+VIDEO_ID_IN_URL = re.compile(r"/(?:video|photo|v)/(\d{8,})")
+
 # Nomes de campo usados pelas APIs mais comuns (TikTok web, tikwm, Apify, Research API).
-ID_FIELDS = ("id", "aweme_id", "video_id", "item_id", "awemeId", "itemId")
-URL_FIELDS = ("webVideoUrl", "share_url", "shareUrl", "url", "video_url")
+ID_FIELDS = (
+    "id", "aweme_id", "video_id", "item_id", "post_id", "awemeId", "itemId", "videoId", "postId",
+    "video.id", "item.id", "aweme.aweme_id",
+)
+URL_FIELDS = (
+    "webVideoUrl", "share_url", "shareUrl", "url", "video_url", "videoUrl", "postUrl", "post_url",
+    "tiktokUrl", "tiktok_url", "link",
+)
 AUTHOR_FIELDS = (
     "author.unique_id", "author.uniqueId", "authorMeta.name", "author.username",
     "author_unique_id", "username", "author",
@@ -48,11 +60,11 @@ class RepostProvider(abc.ABC):
     async def request(self, method: str, url: str, **kwargs: Any) -> httpx.Response:
         from ..http import request_with_retry
 
+        kwargs.setdefault("timeout", self.settings.http_timeout)
         return await request_with_retry(
             self.client, method, url,
             attempts=self.settings.retry_attempts,
             base_delay=self.settings.retry_base_delay,
-            timeout=self.settings.http_timeout,
             **kwargs,
         )
 
@@ -130,12 +142,15 @@ def _to_iso(value: Any) -> str | None:
 def normalize_item(item: dict[str, Any], fields: dict[str, str] | None = None) -> Repost | None:
     """Converte um item bruto da API em `Repost`. Retorna None se não houver ID."""
     fields = fields or {}
+    url = _to_text(first_value(item, fields.get("url_field", ""), URL_FIELDS))
     item_id = _to_text(first_value(item, fields.get("id_field", ""), ID_FIELDS))
+    if not item_id and url:
+        match = VIDEO_ID_IN_URL.search(url)
+        item_id = match.group(1) if match else None
     if not item_id:
         return None
     author = _to_text(first_value(item, fields.get("author_field", ""), AUTHOR_FIELDS))
     author = author.lstrip("@") if author else None
-    url = _to_text(first_value(item, fields.get("url_field", ""), URL_FIELDS))
     if not url or not url.startswith("http"):
         url = video_url(item_id, author)
     return Repost(
@@ -155,6 +170,12 @@ def normalize_items(items: list[dict[str, Any]], fields: dict[str, str] | None =
         if repost and repost.item_id not in seen:
             seen.add(repost.item_id)
             reposts.append(repost)
+    if items and not reposts:
+        raise ProviderError(
+            f"A API devolveu {len(items)} item(ns), mas nenhum com ID de vídeo reconhecido. "
+            f"Campos do primeiro item: {', '.join(sorted(items[0])[:25])}. "
+            "Configure HTTP_API_ID_FIELD / HTTP_API_URL_FIELD."
+        )
     return reposts
 
 

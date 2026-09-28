@@ -125,6 +125,15 @@ class Settings:
         return self.log_dir / "reposts.jsonl"
 
     @property
+    def state_key(self) -> str:
+        """Identifica o estado salvo: trocar o perfil ou o provedor recomeça do zero."""
+        return f"{self.provider}:{self.target_label}"
+
+    @property
+    def is_simulation(self) -> bool:
+        return self.provider == "mock"
+
+    @property
     def target_label(self) -> str:
         if self.username:
             return f"@{self.username}"

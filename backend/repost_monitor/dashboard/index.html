@@ -16,6 +16,13 @@
   </header>
 
   <main>
+    <section id="sim-warning" class="card sim-warning" role="alert" hidden>
+      <strong>Modo simulação: o programa NÃO está lendo o TikTok.</strong>
+      <p>Reposts de verdade não vão aparecer enquanto <code>PROVIDER=mock</code>. Só aparecem os reposts de
+      teste do <code>simular-repost.bat</code>. Para monitorar o perfil de verdade, abra <code>backend\.env</code>,
+      coloque <code>PROVIDER=apify</code> e o seu <code>APIFY_TOKEN</code>, e reinicie o <code>iniciar.bat</code>.</p>
+    </section>
+
     <section id="status-card" class="card status status-idle" aria-live="polite">
       <div class="status-dot" aria-hidden="true"></div>
       <div>

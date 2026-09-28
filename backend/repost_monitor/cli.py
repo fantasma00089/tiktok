@@ -89,7 +89,7 @@ def cmd_status(settings: Settings, args: argparse.Namespace) -> int:
         from .state import StateStore
         from .status import build_status
 
-        data = build_status(settings, StateStore(settings.state_file).load(settings.target_label), running=False)
+        data = build_status(settings, StateStore(settings.state_file).load(settings.state_key), running=False)
     _print(data)
     return EXIT_OK
 
@@ -100,7 +100,7 @@ def cmd_open_latest(settings: Settings, args: argparse.Namespace) -> int:
         from .notifiers import open_in_browser
         from .state import StateStore
 
-        latest = StateStore(settings.state_file).load(settings.target_label).latest_detection
+        latest = StateStore(settings.state_file).load(settings.state_key).latest_detection
         data = {"ok": False, "erro": "Nenhum repost detectado ainda."}
         if latest:
             data = {"ok": open_in_browser(latest.url), "url": latest.url}

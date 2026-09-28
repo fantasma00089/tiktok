@@ -57,5 +57,6 @@ def build_status(settings: Settings, state: MonitorState, *, running: bool = Tru
         "intervalo_polling_segundos": settings.poll_interval,
         "janela_alerta_minutos": settings.alert_window_minutes,
         "monitor_online": running,
+        "modo_simulacao": settings.is_simulation,
         "gerado_em": iso(now),
     }

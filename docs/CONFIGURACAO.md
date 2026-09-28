@@ -76,7 +76,8 @@ No Windows, clicar no toast (ou no botão “Abrir vídeo”) abre o vídeo repo
 
 `PROVIDER` escolhe de onde vêm os dados. Todos devolvem a lista de reposts do mais recente para o mais antigo.
 
-### `mock` — simulação
+### `mock` — simulação (padrão)
+**Não consulta o TikTok**: reposts reais nunca aparecem neste modo, e o painel mostra um aviso.
 Lê `MOCK_FILE` (padrão `backend/data/mock_reposts.json`). Use `repost_monitor simulate` para inserir um repost.
 
 ### `http` — qualquer API REST/JSON (PrimeApi, YepAPI, RapidAPI, tikwm...)
@@ -102,15 +103,24 @@ HTTP_API_ID_FIELD=video_id
 
 Dica: rode `check --standalone` e veja o JSON; se aparecer “Não foi possível localizar a lista”, ajuste `HTTP_API_ITEMS_PATH`.
 
-### `apify` — Actor da Apify Store
+### `apify` — Actor da Apify Store (recomendado para começar)
+
+Só o token é obrigatório:
+
+```ini
+PROVIDER=apify
+APIFY_TOKEN=apify_api_xxxxxxxx
+```
 
 | Variável | Descrição |
 |---|---|
-| `APIFY_TOKEN` | Token da conta (plano gratuito tem créditos mensais) |
-| `APIFY_ACTOR` | ID do Actor (`usuario~nome` ou `usuario/nome`) que suporte a aba de reposts |
-| `APIFY_INPUT` | Entrada do Actor em JSON; `{username}` é substituído |
+| `APIFY_TOKEN` | Token da conta (apify.com → *Settings → API & Integrations*). O plano gratuito tem créditos mensais |
+| `APIFY_ACTOR` | Opcional. Padrão: `maximedupre/tiktok-reposts` (lê a aba pública de reposts) |
+| `APIFY_INPUT` | Opcional. Padrão: `{"profiles": ["https://www.tiktok.com/@{username}"], "maxItemsPerProfile": 10}` |
 
-Usa `run-sync-get-dataset-items`, então cada ciclo aguarda o Actor terminar. Prefira `POLL_INTERVAL_SECONDS` ≥ 300 para economizar créditos.
+Cada verificação executa o Actor (leva de alguns segundos a alguns minutos e consome créditos).
+Use `POLL_INTERVAL_SECONDS` ≥ 600 e confira o preço por resultado na página do Actor.
+Antes de configurar, teste o Actor no site da Apify com o seu @ e veja se os reposts aparecem.
 
 ### `tiktok_research` — API oficial
 

@@ -47,6 +47,7 @@
     const s = current;
     if (!s) return;
     $("target").textContent = s.alvo || "—";
+    $("sim-warning").hidden = !s.modo_simulacao;
 
     const card = $("status-card");
     const latest = s.ultimo_repost;

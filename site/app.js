@@ -132,7 +132,8 @@
       return li;
     }));
 
-    $("source").textContent = src.live ? "Conectado ao monitor (tempo real)" : "Status publicado";
+    $("source").textContent = (src.live ? "Conectado ao monitor (tempo real)" : "Status publicado") +
+      (data.modo_simulacao ? " · modo simulação (não lê o TikTok)" : "");
     $("updated").textContent = `atualizado ${relative(data.gerado_em) || "—"}`;
 
     currentAlertId = alert ? latest.item_id : null;
