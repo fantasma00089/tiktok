@@ -12,6 +12,8 @@
   consegue lê-los — o monitor apenas continuará “Aguardando repost”.
 - **A ordem da lista de reposts não é garantida.** Por isso a detecção compara o conjunto de IDs já
   vistos, e não apenas o primeiro item.
+- **Falha na primeira leitura**: se a API devolver uma lista vazia por engano justamente na primeira
+  leitura, a base fica vazia e os reposts antigos serão notificados uma vez na leitura seguinte.
 - **Repost desfeito não gera alerta**, e se o mesmo vídeo for repostado de novo depois ele não é
   considerado novo (o ID já foi visto).
 

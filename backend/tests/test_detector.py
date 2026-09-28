@@ -38,6 +38,13 @@ def test_empty_response_changes_nothing():
     assert state.last_item_id == "1"
 
 
+def test_profile_without_reposts_alerts_on_first_repost():
+    state = MonitorState(target="@a")
+    assert detect_new_reposts(state, []) == []  # leitura de base vazia
+    assert state.initialized
+    assert [n.item_id for n in detect_new_reposts(state, [r("1")])] == ["1"]
+
+
 def test_undo_repost_does_not_trigger_old_item():
     state = MonitorState(target="@a")
     detect_new_reposts(state, [r("2"), r("1")])

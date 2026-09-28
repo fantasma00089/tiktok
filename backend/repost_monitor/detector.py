@@ -20,9 +20,12 @@ def detect_new_reposts(
     - Um item é novo se o ID nunca foi visto. Guardamos um conjunto de IDs (e
       não só o último) porque a ordem da lista pode variar entre chamadas e
       um repost desfeito não deve fazer o anterior "reaparecer" como novo.
-    - Lista vazia não altera nada (pode ser falha momentânea da API).
+    - Lista vazia na primeira leitura significa perfil sem reposts: a base fica
+      vazia e o primeiro repost que surgir gera alerta.
+    - Depois disso, lista vazia não altera nada (pode ser falha momentânea da API).
     """
     if not fetched:
+        state.initialized = True
         return []
 
     seen = set(state.seen_ids)

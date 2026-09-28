@@ -61,8 +61,8 @@ cd backend
 .venv/bin/python -m repost_monitor check               # detecta: código de saída 10
 ```
 
-A primeira leitura só registra os reposts que já existem (sem alerta). Por isso, o
-`simulate` feito **depois** que o monitor já está rodando é o que gera a notificação.
+A primeira leitura só registra os reposts que já existem (sem alerta). Como o arquivo de
+simulação começa vazio, qualquer `simulate` feito depois dessa leitura gera a notificação.
 
 ## 3. Provedor real de dados
 
