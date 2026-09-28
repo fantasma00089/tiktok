@@ -1,0 +1,12 @@
+{
+  "repostou": false,
+  "username": null,
+  "alvo": "(aguardando o primeiro status do monitor)",
+  "status": "iniciando",
+  "mensagem": "Aguardando o primeiro status do monitor",
+  "ultimo_repost": null,
+  "reposts_recentes": [],
+  "janela_alerta_minutos": 60,
+  "monitor_online": false,
+  "gerado_em": null
+}

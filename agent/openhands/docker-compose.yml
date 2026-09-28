@@ -1,0 +1,49 @@
+# OpenHands + Ollama rodando 100% local (sem API paga).
+#
+#   cp .env.example .env      # ajuste versão/modelo se quiser
+#   docker compose up -d
+#   docker compose exec ollama ollama pull qwen2.5-coder:7b
+#   abra http://localhost:3000 e configure o LLM (veja docs/AGENTE.md)
+#
+# O OpenHands cria um container "sandbox" por conversa via docker.sock.
+# O monitor de reposts roda no host; o agente fala com ele por
+# http://host.docker.internal:8000 (defina HOST=0.0.0.0 e ADMIN_TOKEN no backend/.env).
+
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: repost-ollama
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:11434:11434"
+    volumes:
+      - ollama:/root/.ollama
+    # Descomente para usar GPU NVIDIA (requer nvidia-container-toolkit):
+    # deploy:
+    #   resources:
+    #     reservations:
+    #       devices:
+    #         - driver: nvidia
+    #           count: all
+    #           capabilities: [gpu]
+
+  openhands:
+    image: docker.openhands.dev/openhands/openhands:${OPENHANDS_VERSION:-1.2}
+    container_name: repost-openhands
+    restart: unless-stopped
+    depends_on:
+      - ollama
+    environment:
+      AGENT_SERVER_IMAGE_REPOSITORY: docker.openhands.dev/openhands/runtime
+      AGENT_SERVER_IMAGE_TAG: ${OPENHANDS_VERSION:-1.2}-nikolaik
+      LOG_ALL_EVENTS: "true"
+    ports:
+      - "127.0.0.1:3000:3000"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${OPENHANDS_STATE_DIR:-~/.openhands}:/.openhands
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+volumes:
+  ollama:

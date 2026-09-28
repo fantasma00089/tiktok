@@ -1,0 +1,12 @@
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+backend/.env
+backend/data/
+backend/logs/
+agent/openhands/.env
+agent/openhands/workspace/
+.DS_Store
+.netlify/

@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Painel de Reposts</title>
+  <link rel="stylesheet" href="/dashboard/dashboard.css">
+</head>
+<body>
+  <header class="top">
+    <div>
+      <p class="eyebrow">Monitor de reposts · TikTok</p>
+      <h1 id="target">—</h1>
+    </div>
+    <span id="conn" class="pill pill-off" title="Conexão em tempo real com o monitor">desconectado</span>
+  </header>
+
+  <main>
+    <section id="status-card" class="card status status-idle" aria-live="polite">
+      <div class="status-dot" aria-hidden="true"></div>
+      <div>
+        <h2 id="status-text">Carregando…</h2>
+        <p id="status-sub" class="muted"></p>
+      </div>
+    </section>
+
+    <section id="latest" class="card latest" hidden>
+      <img id="latest-cover" alt="" hidden>
+      <div class="latest-body">
+        <p class="eyebrow">Último repost detectado</p>
+        <h3 id="latest-author"></h3>
+        <p id="latest-desc" class="muted"></p>
+        <p id="latest-time" class="small muted"></p>
+        <a id="latest-link" class="btn btn-primary" target="_blank" rel="noopener">Abrir vídeo no TikTok</a>
+      </div>
+    </section>
+
+    <section class="card">
+      <dl class="grid">
+        <div><dt>Última verificação</dt><dd id="last-check">—</dd></div>
+        <div><dt>Próxima verificação</dt><dd id="next-check">—</dd></div>
+        <div><dt>Provedor</dt><dd id="provider">—</dd></div>
+        <div><dt>Verificações</dt><dd id="checks">—</dd></div>
+        <div><dt>Site (Netlify)</dt><dd id="netlify">—</dd></div>
+        <div><dt>Falhas seguidas</dt><dd id="failures">0</dd></div>
+      </dl>
+      <p id="error" class="error" hidden></p>
+    </section>
+
+    <section class="actions">
+      <button id="btn-check" class="btn btn-primary">Verificar agora</button>
+      <button id="btn-notify" class="btn">Testar notificação</button>
+      <button id="btn-open" class="btn">Abrir último vídeo</button>
+      <button id="btn-browser-notif" class="btn">Ativar alertas do navegador</button>
+    </section>
+    <p id="action-msg" class="small muted" role="status"></p>
+
+    <section class="card">
+      <h2 class="section-title">Histórico de reposts</h2>
+      <ul id="history" class="history"><li class="muted">Nenhum repost detectado ainda.</li></ul>
+    </section>
+  </main>
+
+  <script src="/dashboard/dashboard.js"></script>
+</body>
+</html>

@@ -1,0 +1,130 @@
+:root {
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --text: #121214;
+  --muted: #5f5f6b;
+  --border: #e4e4ea;
+  --accent: #fe2c55;
+  --accent-2: #25f4ee;
+  --on-accent: #ffffff;
+  --ok: #188a4a;
+  --warn: #b86e00;
+  --radius: 16px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #0d0d10;
+    --surface: #18181d;
+    --text: #f2f2f5;
+    --muted: #a3a3b0;
+    --border: #2b2b33;
+  }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+.wrap { max-width: 720px; margin: 0 auto; padding: 40px 16px 32px; }
+header { margin-bottom: 8px; }
+h1 { font-size: clamp(26px, 6vw, 38px); margin: 4px 0 0; line-height: 1.15; overflow-wrap: anywhere; }
+h2, h3 { margin: 0; }
+.eyebrow { margin: 0; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+.muted { color: var(--muted); }
+.small { font-size: 13px; }
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin: 16px 0;
+}
+
+#card { display: flex; gap: 16px; align-items: center; }
+#card h2 { font-size: 22px; }
+#card p { margin: 4px 0 0; }
+.dot { width: 16px; height: 16px; border-radius: 50%; background: var(--muted); flex: none; }
+.state-waiting .dot { background: var(--ok); }
+.state-offline .dot { background: var(--warn); }
+.state-alert { border-color: var(--accent); background: color-mix(in srgb, var(--accent) 9%, var(--surface)); }
+.state-alert .dot { background: var(--accent); animation: ping 1.3s infinite; }
+@keyframes ping {
+  from { box-shadow: 0 0 0 0 color-mix(in srgb, var(--accent) 55%, transparent); }
+  to { box-shadow: 0 0 0 16px transparent; }
+}
+@media (prefers-reduced-motion: reduce) { .state-alert .dot { animation: none; } }
+
+.latest { display: flex; gap: 18px; align-items: flex-start; }
+.latest img { width: 104px; aspect-ratio: 9 / 16; object-fit: cover; border-radius: 12px; background: var(--border); flex: none; }
+.latest-body { min-width: 0; }
+.latest-body h3 { font-size: 19px; margin-top: 4px; overflow-wrap: anywhere; }
+.latest-body p { margin: 6px 0 12px; overflow-wrap: anywhere; }
+
+.btn {
+  display: inline-block;
+  background: var(--accent);
+  color: var(--on-accent);
+  border: 0;
+  border-radius: 12px;
+  padding: 10px 16px;
+  font: inherit;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn:hover { filter: brightness(1.08); }
+.btn-ghost { background: transparent; color: var(--text); border: 1px solid var(--border); }
+.link-btn { background: none; border: 0; padding: 0; color: var(--accent); font: inherit; cursor: pointer; text-decoration: underline; }
+.icon-btn { background: none; border: 0; color: inherit; font-size: 24px; line-height: 1; cursor: pointer; padding: 0 4px; }
+
+.banner {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  padding: 12px 16px;
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 700;
+  text-align: center;
+}
+.banner a { color: var(--on-accent); }
+
+.section-title { font-size: 16px; margin-bottom: 6px; }
+.history { list-style: none; margin: 0; padding: 0; }
+.history li { display: flex; justify-content: space-between; gap: 12px; padding: 10px 0; border-top: 1px solid var(--border); }
+.history li:first-child { border-top: 0; }
+.history a { color: var(--accent); font-weight: 600; overflow-wrap: anywhere; }
+.history time { white-space: nowrap; }
+
+footer { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+
+dialog {
+  width: min(440px, calc(100vw - 32px));
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  padding: 24px;
+}
+dialog::backdrop { background: rgb(0 0 0 / .55); }
+dialog h2 { font-size: 22px; margin: 6px 0; overflow-wrap: anywhere; }
+.modal-actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 16px; }
+
+@media (max-width: 520px) {
+  .latest { flex-direction: column; }
+  .history li { flex-direction: column; gap: 2px; }
+}

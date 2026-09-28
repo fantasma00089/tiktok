@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Alerta de Repost</title>
+  <meta name="description" content="Aviso em tempo quase real quando o perfil monitorado reposta um vídeo no TikTok.">
+  <meta name="color-scheme" content="light dark">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="banner" class="banner" role="alert" hidden>
+    <span id="banner-text"></span>
+    <a id="banner-link" target="_blank" rel="noopener">Ver vídeo</a>
+    <button id="banner-close" class="icon-btn" aria-label="Fechar aviso">×</button>
+  </div>
+
+  <main class="wrap">
+    <header>
+      <p class="eyebrow">Monitor de reposts do TikTok</p>
+      <h1 id="target">Carregando…</h1>
+    </header>
+
+    <section id="card" class="card state-loading" aria-live="polite">
+      <div class="dot" aria-hidden="true"></div>
+      <div>
+        <h2 id="headline">Consultando status…</h2>
+        <p id="subline" class="muted"></p>
+      </div>
+    </section>
+
+    <section id="latest" class="card latest" hidden>
+      <img id="latest-cover" alt="" hidden>
+      <div class="latest-body">
+        <p class="eyebrow">Último repost</p>
+        <h3 id="latest-title"></h3>
+        <p id="latest-desc" class="muted"></p>
+        <a id="latest-link" class="btn" target="_blank" rel="noopener">Assistir no TikTok</a>
+      </div>
+    </section>
+
+    <section id="history-wrap" class="card" hidden>
+      <h2 class="section-title">Reposts recentes</h2>
+      <ul id="history" class="history"></ul>
+    </section>
+
+    <footer class="muted small">
+      <span id="source">—</span> · <span id="updated">—</span>
+      <button id="enable-notif" class="link-btn" hidden>Ativar notificações do navegador</button>
+    </footer>
+  </main>
+
+  <dialog id="modal" aria-labelledby="modal-title">
+    <p class="eyebrow">Novo repost detectado</p>
+    <h2 id="modal-title"></h2>
+    <p id="modal-desc" class="muted"></p>
+    <div class="modal-actions">
+      <a id="modal-link" class="btn" target="_blank" rel="noopener">Abrir vídeo</a>
+      <button id="modal-close" class="btn btn-ghost">Entendi</button>
+    </div>
+  </dialog>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

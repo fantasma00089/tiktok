@@ -1,0 +1,11 @@
+# Cloudflare Tunnel nomeado (URL fixa no seu domínio). Veja docs/TUNNEL.md.
+# Copie para ~/.cloudflared/config.yml (Windows: %USERPROFILE%\.cloudflared\config.yml)
+tunnel: repost-monitor
+credentials-file: /caminho/para/.cloudflared/<TUNNEL-UUID>.json
+
+ingress:
+  # Só as rotas públicas saem para a internet; painel e /api/* ficam restritos ao PC.
+  - hostname: status.seudominio.com
+    path: ^/(status|status\.json|health)$
+    service: http://localhost:8000
+  - service: http_status:404

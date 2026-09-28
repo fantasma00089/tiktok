@@ -1,0 +1,4 @@
+# Site 100% estático: sem build e sem funções.
+[build]
+  publish = "."
+  command = ""
