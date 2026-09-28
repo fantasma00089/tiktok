@@ -153,9 +153,15 @@ def cmd_open_browser(settings: Settings, args: argparse.Namespace) -> int:
         return EXIT_ERROR
     from .providers.browser import open_visible_browser
 
-    print("Abrindo o navegador. Faça login ou resolva o captcha, se o TikTok pedir, e FECHE a janela ao terminar.",
-          file=sys.stderr)
-    asyncio.run(open_visible_browser(settings.provider_options, settings.username))
+    from .http import ProviderError
+
+    print("Abrindo o navegador do monitor. Se o TikTok pedir captcha ou login, resolva na janela.\n"
+          "Quando o perfil aparecer normalmente, FECHE a janela do navegador.", file=sys.stderr)
+    try:
+        open_visible_browser(settings.provider_options, settings.username)
+    except (ProviderError, OSError) as exc:
+        _print({"ok": False, "erro": str(exc)})
+        return EXIT_ERROR
     _print({"ok": True, "mensagem": "Navegador fechado; cookies salvos para as próximas verificações."})
     return EXIT_OK
 

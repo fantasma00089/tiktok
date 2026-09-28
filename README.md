@@ -18,9 +18,10 @@ Agente local (OpenClaw / OpenHands) ──▶ inicia, supervisiona, força checa
 
 ## Início rápido no Windows
 
-Sem API e sem conta: o monitor abre o perfil num **navegador invisível** (o Microsoft Edge que já vem
-no Windows), entra na aba **Reposts** e compara com a verificação anterior. Imagens e vídeos não são
-carregados, e o navegador fecha depois de cada verificação.
+Sem API e sem conta: a cada verificação o monitor abre o **Microsoft Edge** (que já vem no Windows)
+com a janela fora da tela, entra na aba **Reposts** do perfil e compara com a verificação anterior.
+Imagens e vídeos não são carregados, e o Edge fecha em seguida — por alguns segundos aparece só um
+ícone do Edge na barra de tarefas. Esse Edge usa um perfil separado; o seu Edge pessoal não é tocado.
 
 1. Instale o **Python 3.10+** em https://www.python.org/downloads/ — na primeira tela do instalador,
    marque **“Add python.exe to PATH”**.
@@ -42,7 +43,7 @@ geram a notificação do Windows e o aviso no painel.
 | `instalar.bat` | Instala (ou reinstala) tudo |
 | `iniciar.bat` | Inicia o monitor e abre o painel |
 | `verificar-agora.bat` | Verifica agora, sem esperar o próximo ciclo (com o `iniciar.bat` aberto ou não) |
-| `abrir-navegador.bat` | Mostra o navegador do monitor, para fazer login ou resolver captcha se o TikTok pedir |
+| `abrir-navegador.bat` | Abre o Edge do monitor numa janela comum, para resolver captcha/login se o TikTok pedir (feche o `iniciar.bat` antes e feche a janela ao terminar) |
 | `testar-notificacao.bat` | Mostra uma notificação de teste do Windows |
 
 Requisitos do perfil monitorado: a aba de reposts precisa estar **pública**

@@ -33,7 +33,7 @@ def build_status(settings: Settings, state: MonitorState, *, running: bool = Tru
     if repostou:
         code, text = "repost_detectado", f"Repost detectado {minutes_ago_text(minutes)}"
     elif not state.initialized and state.last_error:
-        code, text = "erro", "Erro ao consultar a API do TikTok"
+        code, text = "erro", "Erro ao verificar o TikTok"
     elif not state.initialized:
         code, text = "iniciando", "Iniciando monitoramento"
     else:

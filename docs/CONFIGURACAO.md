@@ -78,21 +78,26 @@ No Windows, clicar no toast (ou no botão “Abrir vídeo”) abre o vídeo repo
 
 ### `browser` — navegador local (padrão, sem API)
 
-A cada ciclo o monitor abre o perfil num navegador invisível, clica na aba **Reposts** e lê a lista
-que o próprio site do TikTok carrega (`/api/repost/item_list`); se ela não vier, lê os links de vídeo
-da aba. Imagens, vídeos e fontes são bloqueados e o navegador é fechado ao final de cada ciclo.
+A cada ciclo o monitor abre o navegador instalado (no Windows, o Microsoft Edge) como um processo
+comum, com um perfil próprio, e só então se conecta a ele para ler a aba **Reposts**. Como o navegador
+não é iniciado pela automação, ele não carrega as marcas que o TikTok usa para detectar robôs.
+O monitor clica na aba, lê a lista que o próprio site carrega (`/api/repost/item_list`) e, se ela não
+vier, lê os links de vídeo da aba. Imagens, vídeos e fontes são bloqueados e o navegador é fechado ao
+final de cada ciclo.
 
 | Variável | Padrão | Descrição |
 |---|---|---|
-| `BROWSER_CHANNEL` | `msedge` no Windows, vazio nos outros | Navegador: `msedge`, `chrome` ou vazio (Chromium do Playwright) |
-| `BROWSER_HEADLESS` | `true` | `false` mostra a janela durante a verificação (útil para depurar) |
+| `BROWSER_MODE` | `offscreen` | `offscreen`: janela fora da tela (aparece só um ícone na barra de tarefas por alguns segundos) · `headless`: sem janela (o TikTok costuma pedir captcha) · `visible`: janela visível |
+| `BROWSER_CHANNEL` | `msedge` no Windows, vazio nos outros | `msedge`, `chrome` ou vazio (Chromium do Playwright) |
+| `BROWSER_PATH` | — | Caminho do executável do navegador, se não estiver no lugar padrão |
 | `BROWSER_TIMEOUT_SECONDS` | `45` | Tempo máximo para carregar o perfil |
 | `BROWSER_BLOCK_MEDIA` | `true` | Não carrega imagens, vídeos e fontes |
-| `BROWSER_PROFILE_DIR` | `data/browser-profile` | Perfil do navegador (cookies do TikTok) |
+| `BROWSER_PROFILE_DIR` | `data/navegador` | Perfil do navegador (cookies do TikTok), separado do seu Edge pessoal |
 
 Se o TikTok pedir captcha ou login, o painel mostra o erro. Feche o `iniciar.bat`, rode
-`abrir-navegador.bat` (ou `python -m repost_monitor abrir-navegador`), resolva na janela, feche-a e
-inicie de novo. Os cookies ficam salvos no perfil do navegador.
+`abrir-navegador.bat` (ou `python -m repost_monitor abrir-navegador`): ele abre o mesmo perfil numa
+janela comum, sem automação. Resolva o que aparecer, feche a janela e inicie de novo. Os cookies ficam
+salvos no perfil do navegador.
 
 ### `mock` — simulação
 **Não consulta o TikTok**: reposts reais nunca aparecem neste modo, e o painel mostra um aviso.

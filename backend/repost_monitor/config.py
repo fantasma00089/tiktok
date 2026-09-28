@@ -194,14 +194,18 @@ class Settings:
 
 def _provider_options(provider: str, g) -> dict[str, Any]:
     if provider == "browser":
-        from .providers.browser import TIKTOK_URL, default_channel
+        from .providers.browser import MODES, TIKTOK_URL, default_channel
 
+        mode = (g("BROWSER_MODE") or "offscreen").strip().lower()
+        if mode not in MODES:
+            raise ValueError(f"BROWSER_MODE inválido: {mode!r}. Opções: {', '.join(sorted(MODES))}")
         return {
             "channel": g("BROWSER_CHANNEL") if g("BROWSER_CHANNEL") is not None else default_channel(),
-            "headless": _bool(g("BROWSER_HEADLESS"), True),
+            "executable": g("BROWSER_PATH") or "",
+            "mode": mode,
             "block_media": _bool(g("BROWSER_BLOCK_MEDIA"), True),
             "timeout": _int(g("BROWSER_TIMEOUT_SECONDS"), 45),
-            "profile_dir": _path(g("BROWSER_PROFILE_DIR"), BACKEND_DIR / "data" / "browser-profile"),
+            "profile_dir": _path(g("BROWSER_PROFILE_DIR"), BACKEND_DIR / "data" / "navegador"),
             "base_url": (g("BROWSER_BASE_URL") or TIKTOK_URL).rstrip("/"),
         }
     if provider == "http":

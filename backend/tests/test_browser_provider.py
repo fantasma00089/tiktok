@@ -95,7 +95,7 @@ def _fetch(settings, base_url, username, tmp_path, timeout=10):
     settings.username = username
     settings.provider = "browser"
     settings.provider_options = {
-        "channel": "", "headless": True, "block_media": True, "timeout": timeout,
+        "channel": "", "executable": "", "mode": "headless", "block_media": True, "timeout": timeout,
         "profile_dir": tmp_path / "perfil", "base_url": base_url,
     }
 
@@ -147,3 +147,21 @@ def test_captcha_is_reported(settings, fake_tiktok, tmp_path):
 def test_missing_tab_is_reported(settings, fake_tiktok, tmp_path):
     with pytest.raises(ProviderError, match="aba de reposts"):
         _fetch(settings, fake_tiktok, "semaba", tmp_path, timeout=3)
+
+
+def test_browser_is_not_flagged_as_automated(tmp_path):
+    """O TikTok bloqueia navegadores com navigator.webdriver = true (o que o Playwright causa ao
+    iniciar o navegador). Iniciamos o navegador como processo comum e só conectamos via CDP."""
+    from playwright.async_api import async_playwright
+
+    from repost_monitor.providers.browser import LocalBrowser
+
+    async def go():
+        async with async_playwright() as pw:
+            opts = {"channel": "", "executable": "", "mode": "headless", "profile_dir": tmp_path / "p"}
+            async with LocalBrowser(pw, opts) as local:
+                page = await local.page()
+                await page.goto("data:text/html,<p>x</p>")
+                return await page.evaluate("navigator.webdriver")
+
+    assert asyncio.run(go()) is False
