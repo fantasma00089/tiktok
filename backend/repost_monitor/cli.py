@@ -24,8 +24,7 @@ EXIT_OK, EXIT_ERROR, EXIT_NEW_REPOST = 0, 1, 10
 
 
 def _print(data: Any) -> None:
-    if sys.stdout is not None:  # pythonw.exe não tem console
-        print(json.dumps(data, ensure_ascii=False, indent=2))
+    print(json.dumps(data, ensure_ascii=False, indent=2))
 
 
 def _server_url(settings: Settings, path: str) -> str:
@@ -182,7 +181,25 @@ COMMANDS = {
 }
 
 
+def _fix_std_streams() -> None:
+    """Windows: pythonw.exe não tem stdout/stderr (o uvicorn quebraria ao chamar
+    isatty()), e com saída redirecionada o padrão é cp1252, que não codifica emoji
+    das legendas. Garantimos streams válidos e em UTF-8."""
+    import os
+
+    for name in ("stdout", "stderr"):
+        stream = getattr(sys, name)
+        if stream is None:
+            setattr(sys, name, open(os.devnull, "w", encoding="utf-8"))
+        elif hasattr(stream, "reconfigure"):
+            try:
+                stream.reconfigure(encoding="utf-8", errors="replace")
+            except (ValueError, OSError):
+                pass
+
+
 def main(argv: list[str] | None = None) -> int:
+    _fix_std_streams()
     parser = argparse.ArgumentParser(prog="repost_monitor", description="Monitor de reposts do TikTok")
     parser.add_argument("--env-file", help="Caminho do arquivo .env (padrão: backend/.env)")
     sub = parser.add_subparsers(dest="command", required=True)

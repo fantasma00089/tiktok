@@ -23,7 +23,7 @@ def load_dotenv(path: Path) -> dict[str, str]:
     values: dict[str, str] = {}
     if not path.is_file():
         return values
-    for raw in path.read_text(encoding="utf-8").splitlines():
+    for raw in path.read_text(encoding="utf-8-sig").splitlines():
         line = raw.strip()
         if not line or line.startswith("#") or "=" not in line:
             continue

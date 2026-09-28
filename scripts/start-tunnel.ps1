@@ -1,4 +1,4 @@
-# Expõe o endpoint /status local na internet.
+﻿# Expõe o endpoint /status local na internet.
 #   .\start-tunnel.ps1 cloudflare
 #   .\start-tunnel.ps1 ngrok [dominio.ngrok-free.app]
 param([string]$Kind = "cloudflare", [string]$Domain = "")

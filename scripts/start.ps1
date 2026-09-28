@@ -1,4 +1,4 @@
-# Inicia o monitor (polling + /status + painel em http://127.0.0.1:8000/).
+﻿# Inicia o monitor (polling + /status + painel em http://127.0.0.1:8000/).
 #   .\start.ps1              em primeiro plano
 #   .\start.ps1 -Background  em segundo plano, sem janela
 param([switch]$Background)

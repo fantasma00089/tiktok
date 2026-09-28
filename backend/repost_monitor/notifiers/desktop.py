@@ -71,7 +71,7 @@ def send_desktop_notification(title: str, body: str, url: str | None = None) -> 
     argv, extra_env = command
     try:
         result = subprocess.run(
-            argv, env={**os.environ, **extra_env}, capture_output=True, text=True, timeout=20,
+            argv, env={**os.environ, **extra_env}, capture_output=True, text=True, errors="replace", timeout=20,
             creationflags=getattr(subprocess, "CREATE_NO_WINDOW", 0),
         )
     except (OSError, subprocess.TimeoutExpired) as exc:

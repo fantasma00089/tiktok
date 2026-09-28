@@ -1,4 +1,4 @@
-# Registra o monitor para iniciar automaticamente no logon do Windows (Agendador de Tarefas).
+﻿# Registra o monitor para iniciar automaticamente no logon do Windows (Agendador de Tarefas).
 $ErrorActionPreference = "Stop"
 $script = (Resolve-Path "$PSScriptRoot\start.ps1").Path
 $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoProfile -ExecutionPolicy Bypass -File `"$script`" -Background"

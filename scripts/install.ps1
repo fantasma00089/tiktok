@@ -1,4 +1,4 @@
-# Cria o ambiente virtual do backend, instala dependências e gera o .env (Windows).
+﻿# Cria o ambiente virtual do backend, instala dependências e gera o .env (Windows).
 $ErrorActionPreference = "Stop"
 Set-Location "$PSScriptRoot\..\backend"
 $py = if (Get-Command py -ErrorAction SilentlyContinue) { "py" } else { "python" }

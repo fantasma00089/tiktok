@@ -16,25 +16,37 @@ TikTok API ──polling──▶ Monitor Python (backend/) ──▶ toast nati
 Agente local (OpenClaw / OpenHands) ──▶ inicia, supervisiona, força checagens, abre o vídeo no navegador
 ```
 
-## Início rápido (5 minutos, sem API)
+## Início rápido no Windows (5 minutos, sem API)
+
+1. Instale o **Python 3.10+** em https://www.python.org/downloads/ — na primeira tela do instalador,
+   marque **“Add python.exe to PATH”**.
+2. Baixe o projeto: `git clone -b claude/tiktok-repost-monitoring-agent-a3mngw https://github.com/fantasma00089/tiktok`
+   (ou *Code → Download ZIP* no GitHub e extraia).
+3. Na pasta do projeto, dê dois cliques em:
+
+| Arquivo | O que faz |
+|---|---|
+| `instalar.bat` | Cria o ambiente Python, instala as dependências e gera `backend\.env` |
+| `iniciar.bat` | Inicia o monitor e abre o painel em http://127.0.0.1:8000/ (feche a janela para parar) |
+| `simular-repost.bat` | Com `PROVIDER=mock` (padrão), cria um repost falso: aparece a notificação do Windows e o painel muda para **“Repost detectado agora mesmo”** |
+
+Os `.bat` chamam os scripts do PowerShell com `-ExecutionPolicy Bypass`, então não é preciso mudar a
+política de execução. Se preferir o terminal, use `.\scripts\install.ps1` e `.\scripts\start.ps1`
+(se aparecer “a execução de scripts foi desabilitada”, rode
+`powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1`).
+
+Depois, edite `backend\.env` (Bloco de Notas) e troque `TIKTOK_USERNAME` pelo perfil que você quer
+monitorar e `PROVIDER` pelo provedor real ([CONFIGURACAO.md](docs/CONFIGURACAO.md#provedores)).
+Para iniciar junto com o Windows: `powershell -ExecutionPolicy Bypass -File .\scripts\register-autostart.ps1`.
+
+### Linux / macOS
 
 ```bash
-# Windows (PowerShell)                          # Linux / macOS
-.\scripts\install.ps1                           ./scripts/install.sh
-.\scripts\start.ps1                             ./scripts/start.sh
+./scripts/install.sh && ./scripts/start.sh --background
+cd backend && .venv/bin/python -m repost_monitor simulate && .venv/bin/python -m repost_monitor check
 ```
 
-Abra o painel em **http://127.0.0.1:8000/**. Com `PROVIDER=mock` (padrão), simule um repost em outro terminal:
-
-```bash
-cd backend
-.venv/bin/python -m repost_monitor simulate      # Windows: .venv\Scripts\python.exe -m repost_monitor simulate
-.venv/bin/python -m repost_monitor check         # ou aguarde o próximo ciclo
-```
-
-A notificação nativa aparece, o painel muda para **“Repost detectado agora mesmo”**, e `GET /status` passa a responder `"repostou": true`.
-
-Para ver o site: `cd site && python -m http.server 8080` e abra `http://localhost:8080/?api=http://127.0.0.1:8000`.
+Para ver o site localmente: `cd site && python -m http.server 8080` e abra `http://localhost:8080/?api=http://127.0.0.1:8000`.
 
 ## Estrutura
 
@@ -51,6 +63,7 @@ Para ver o site: `cd site && python -m http.server 8080` e abra `http://localhos
 | `agent/openhands/` | `docker-compose.yml` do OpenHands + Ollama, tarefa e script de supervisão |
 | `tunnel/` | Exemplo de configuração do Cloudflare Tunnel |
 | `scripts/` | Instalação, inicialização, autostart no Windows e tunnel |
+| `*.bat` (raiz) | Atalhos de duplo clique para Windows: instalar, iniciar, simular repost |
 | `docs/` | Documentação técnica |
 
 ## Documentação
