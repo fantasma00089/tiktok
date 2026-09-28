@@ -7,11 +7,13 @@ import httpx
 from ..config import Settings
 from .apify import ApifyProvider
 from .base import RepostProvider
+from .browser import BrowserProvider
 from .http_json import HttpJsonProvider
 from .mock import MockProvider
 from .tiktok_research import TikTokResearchProvider
 
 PROVIDERS: dict[str, type[RepostProvider]] = {
+    "browser": BrowserProvider,
     "mock": MockProvider,
     "http": HttpJsonProvider,
     "apify": ApifyProvider,

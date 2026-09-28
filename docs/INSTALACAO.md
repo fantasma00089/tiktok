@@ -5,6 +5,7 @@
 | Item | Para quê | Obrigatório |
 |---|---|---|
 | Python 3.10+ | Monitor (backend) | Sim |
+| Microsoft Edge (Windows) ou Chromium do Playwright | Ler a aba de reposts (modo navegador) | Sim (o Edge já vem no Windows) |
 | Conta Netlify (gratuita) | Hospedar o site | Sim |
 | `cloudflared` ou `ngrok` | Tunnel reverso (modo tunnel) | Só no modo tunnel |
 | Node.js 22+ | OpenClaw | Se usar OpenClaw |
@@ -30,7 +31,7 @@ O script cria `backend/.venv`, instala as dependências (`fastapi`, `uvicorn`, `
 
 ```ini
 TIKTOK_USERNAME=perfil_que_voce_quer_monitorar
-PROVIDER=mock          # troque por http / apify / tiktok_research quando tiver a API
+PROVIDER=browser       # padrão: navegador local, sem API
 ```
 
 Valide e inicie:
@@ -50,9 +51,9 @@ Painel local: http://127.0.0.1:8000/ · Status público: http://127.0.0.1:8000/s
 ```
 Cria a tarefa agendada `TikTokRepostMonitor`, que roda o monitor em segundo plano (sem janela) a cada logon.
 
-## 2. Teste de ponta a ponta sem API
+## 2. Teste de ponta a ponta sem TikTok (opcional)
 
-Com `PROVIDER=mock`:
+Com `PROVIDER=mock` (simulação, não lê o TikTok):
 
 ```bash
 cd backend
@@ -64,9 +65,10 @@ cd backend
 A primeira leitura só registra os reposts que já existem (sem alerta). Como o arquivo de
 simulação começa vazio, qualquer `simulate` feito depois dessa leitura gera a notificação.
 
-## 3. Provedor real de dados
+## 3. Fonte dos dados
 
-Veja [CONFIGURACAO.md](CONFIGURACAO.md#provedores) e escolha `http`, `apify` ou `tiktok_research`.
+O padrão `PROVIDER=browser` lê a aba de reposts direto do site do TikTok, sem API. Alternativas com
+API: veja [CONFIGURACAO.md](CONFIGURACAO.md#provedores).
 
 ## 4. Site e comunicação
 

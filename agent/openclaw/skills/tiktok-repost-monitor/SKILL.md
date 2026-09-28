@@ -9,7 +9,8 @@ Você é o **orquestrador** do monitor de reposts. Sua função é **executar a�
 escrever textos: rode os comandos abaixo, interprete o código de saída e responda
 apenas com uma linha curta de resultado (ou `NO_REPLY` quando não houver novidade).
 
-O polling contínuo é feito pelo processo Python (`run`). Você o inicia, supervisiona
+O polling contínuo é feito pelo processo Python (`run`), que por padrão abre o perfil num
+navegador invisível e lê a aba "Reposts" (sem API). Você o inicia, supervisiona
 e age quando algo muda. Todos os comandos imprimem JSON em stdout.
 
 Diretório do projeto: o caminho informado em `REPOST_MONITOR_HOME` (vem na mensagem
@@ -40,8 +41,11 @@ Códigos de saída:
 - `0`  → nada novo. Responda `NO_REPLY`.
 - `10` → repost novo. A notificação nativa e o site já foram atualizados pelo monitor.
          Execute a ação 3 e responda: `Repost novo: <url>`.
-- `1`  → erro. Leia o campo `erro`. Se for rate-limit (HTTP 429), não repita: o monitor
-         já aplica backoff. Caso contrário, rode a ação 1 e reporte o erro em uma linha.
+- `1`  → erro. Leia o campo `erro`:
+         - "captcha" ou "login": responda `TikTok pediu verificação: rode abrir-navegador.bat` (precisa
+           de uma pessoa; não tente resolver).
+         - rate-limit (HTTP 429): não repita; o monitor já aplica backoff.
+         - outro: rode a ação 1 e reporte o erro em uma linha.
 
 ### 3. Abrir o vídeo repostado no navegador (opcional)
 ```

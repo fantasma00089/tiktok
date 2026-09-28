@@ -141,7 +141,7 @@ class Monitor:
                  self.settings.target_label, self.provider.name, self.settings.poll_interval)
         if self.settings.is_simulation:
             log.warning("MODO SIMULAÇÃO (PROVIDER=mock): o TikTok NÃO está sendo consultado; "
-                        "reposts reais não aparecem. Configure PROVIDER=apify e APIFY_TOKEN no backend/.env.")
+                        "reposts reais não aparecem. Use PROVIDER=browser no backend/.env.")
         netlify_task = asyncio.create_task(self.netlify.run()) if self.netlify else None
         if self.netlify:
             self.netlify.request_publish()  # publica o estado inicial

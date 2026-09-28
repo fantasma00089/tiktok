@@ -17,6 +17,14 @@
 - **Repost desfeito não gera alerta**, e se o mesmo vídeo for repostado de novo depois ele não é
   considerado novo (o ID já foi visto).
 
+## Do modo navegador (padrão)
+
+- Depende do layout do site do TikTok: se o TikTok mudar a aba de reposts, o monitor mostra o erro
+  “Não encontrei a aba de reposts” até ser ajustado (`providers/browser.py`).
+- O TikTok pode pedir captcha ou login de vez em quando; resolva uma vez pelo `abrir-navegador.bat`.
+- Verificar com muita frequência aumenta a chance de captcha: mantenha `POLL_INTERVAL_SECONDS` ≥ 120.
+- Cada verificação abre o navegador por alguns segundos (uso de CPU/memória só durante esse tempo).
+
 ## Das APIs
 
 - **API oficial (Research API)**: disponível apenas para pesquisadores aprovados pelo TikTok, com cotas diárias.

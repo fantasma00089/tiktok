@@ -9,56 +9,51 @@ Quando detecta um repost novo:
 Tudo roda localmente. O agente de IA (**OpenClaw** ou **OpenHands**, com modelo local via Ollama) orquestra e supervisiona o monitor sem depender de créditos de nuvem.
 
 ```
-TikTok API ──polling──▶ Monitor Python (backend/) ──▶ toast nativo + painel local (http://127.0.0.1:8000)
-   (mock / http /            │  estado + log
-    apify / research)        ├──▶ GET /status ──tunnel (ngrok/Cloudflare)──▶ site Netlify (fetch)
+TikTok (aba Reposts) ──navegador──▶ Monitor Python (backend/) ──▶ toast nativo + painel local (http://127.0.0.1:8000)
+   (ou API: http /            │  estado + log
+    apify / research)         ├──▶ GET /status ──tunnel (ngrok/Cloudflare)──▶ site Netlify (fetch)
                              └──▶ deploy de status.json na Netlify (webhook reverso) ──▶ site Netlify
 Agente local (OpenClaw / OpenHands) ──▶ inicia, supervisiona, força checagens, abre o vídeo no navegador
 ```
 
-## Início rápido no Windows (5 minutos, sem API)
+## Início rápido no Windows
+
+Sem API e sem conta: o monitor abre o perfil num **navegador invisível** (o Microsoft Edge que já vem
+no Windows), entra na aba **Reposts** e compara com a verificação anterior. Imagens e vídeos não são
+carregados, e o navegador fecha depois de cada verificação.
 
 1. Instale o **Python 3.10+** em https://www.python.org/downloads/ — na primeira tela do instalador,
    marque **“Add python.exe to PATH”**.
-2. Baixe o projeto: `git clone -b claude/tiktok-repost-monitoring-agent-a3mngw https://github.com/fantasma00089/tiktok`
-   (ou *Code → Download ZIP* no GitHub e extraia).
-3. Na pasta do projeto, dê dois cliques em:
+2. No GitHub, clique em **Code → Download ZIP** e extraia.
+3. Dê dois cliques em **`instalar.bat`**.
+4. Abra `backend\.env` no Bloco de Notas e coloque o @ do perfil (o que aparece depois do @ no link
+   `tiktok.com/@perfil`, **não** o nome de exibição):
+   ```ini
+   TIKTOK_USERNAME=perfil
+   ```
+5. Dê dois cliques em **`iniciar.bat`**: o painel abre em http://127.0.0.1:8000/. Deixe a janela aberta
+   (fechar a janela para o monitor).
 
-| Arquivo | O que faz |
+A primeira verificação só registra os reposts que já existem. Os reposts feitos **depois** disso
+geram a notificação do Windows e o aviso no painel.
+
+| Atalho | Para quê |
 |---|---|
-| `instalar.bat` | Cria o ambiente Python, instala as dependências e gera `backend\.env` |
-| `iniciar.bat` | Inicia o monitor e abre o painel em http://127.0.0.1:8000/ (feche a janela para parar) |
-| `simular-repost.bat` | Com `PROVIDER=mock` (padrão), cria um repost falso: aparece a notificação do Windows e o painel muda para **“Repost detectado agora mesmo”** |
+| `instalar.bat` | Instala (ou reinstala) tudo |
+| `iniciar.bat` | Inicia o monitor e abre o painel |
+| `verificar-agora.bat` | Verifica agora, sem esperar o próximo ciclo (com o `iniciar.bat` aberto ou não) |
+| `abrir-navegador.bat` | Mostra o navegador do monitor, para fazer login ou resolver captcha se o TikTok pedir |
+| `testar-notificacao.bat` | Mostra uma notificação de teste do Windows |
 
-Os `.bat` chamam os scripts do PowerShell com `-ExecutionPolicy Bypass`, então não é preciso mudar a
-política de execução. Se preferir o terminal, use `.\scripts\install.ps1` e `.\scripts\start.ps1`
-(se aparecer “a execução de scripts foi desabilitada”, rode
-`powershell -ExecutionPolicy Bypass -File .\scripts\start.ps1`).
-
-> **Atenção:** com `PROVIDER=mock` (padrão) o programa **não lê o TikTok** — é só simulação, e o painel
-> mostra um aviso amarelo. Reposts de verdade só aparecem depois do passo abaixo.
-
-**Monitorar de verdade:** crie uma conta grátis em https://apify.com, copie o token em
-*Settings → API & Integrations* e edite `backend\.env` no Bloco de Notas:
-
-```ini
-TIKTOK_USERNAME=seu_arroba_sem_o_arroba
-PROVIDER=apify
-APIFY_TOKEN=cole_o_token_aqui
-POLL_INTERVAL_SECONDS=600
-```
-
-Feche e abra o `iniciar.bat`. A primeira leitura registra os reposts que já existem sem avisar; os
-reposts feitos depois disso geram a notificação. Para testar e ver os reposts atuais logo de cara,
-acrescente `BASELINE_ON_FIRST_RUN=false` (depois volte para `true`). Outros provedores:
-[CONFIGURACAO.md](docs/CONFIGURACAO.md#provedores).
-Para iniciar junto com o Windows: `powershell -ExecutionPolicy Bypass -File .\scripts\register-autostart.ps1`.
+Requisitos do perfil monitorado: a aba de reposts precisa estar **pública**
+(TikTok → Configurações → Privacidade → Vídeos repostados). Para iniciar junto com o Windows:
+`powershell -ExecutionPolicy Bypass -File .\scripts\register-autostart.ps1`.
 
 ### Linux / macOS
 
 ```bash
-./scripts/install.sh && ./scripts/start.sh --background
-cd backend && .venv/bin/python -m repost_monitor simulate && .venv/bin/python -m repost_monitor check
+./scripts/install.sh            # instala também o Chromium do Playwright
+./scripts/start.sh
 ```
 
 Para ver o site localmente: `cd site && python -m http.server 8080` e abra `http://localhost:8080/?api=http://127.0.0.1:8000`.
@@ -67,7 +62,7 @@ Para ver o site localmente: `cd site && python -m http.server 8080` e abra `http
 
 | Pasta | Conteúdo |
 |---|---|
-| `backend/repost_monitor/providers/` | **Módulo de polling**: clientes da API (genérico HTTP/JSON, Apify, TikTok Research API, mock) |
+| `backend/repost_monitor/providers/` | **Módulo de polling**: navegador local (padrão, sem API), genérico HTTP/JSON, Apify, TikTok Research API, simulação |
 | `backend/repost_monitor/detector.py`, `state.py` | **Módulo de detecção**: compara IDs com o estado salvo (último `item_id` + IDs já vistos) |
 | `backend/repost_monitor/notifiers/` | **Módulo de notificação local**: toast nativo, abrir vídeo no navegador |
 | `backend/repost_monitor/server.py`, `publishers/` | **Módulo de comunicação com o site**: `GET /status` (tunnel), deploy do `status.json` na Netlify e webhook genérico |
@@ -78,7 +73,7 @@ Para ver o site localmente: `cd site && python -m http.server 8080` e abra `http
 | `agent/openhands/` | `docker-compose.yml` do OpenHands + Ollama, tarefa e script de supervisão |
 | `tunnel/` | Exemplo de configuração do Cloudflare Tunnel |
 | `scripts/` | Instalação, inicialização, autostart no Windows e tunnel |
-| `*.bat` (raiz) | Atalhos de duplo clique para Windows: instalar, iniciar, simular repost |
+| `*.bat` (raiz) | Atalhos de duplo clique para Windows |
 | `docs/` | Documentação técnica |
 
 ## Documentação
@@ -103,6 +98,7 @@ Executados em `backend/` com o Python do `.venv`. Todos imprimem JSON (os logs v
 | `open-latest` | Abre o último vídeo repostado no navegador | `0`/`1` |
 | `test-notification` | Toast de teste | `0`/`1` |
 | `simulate` | Adiciona um repost falso (`PROVIDER=mock`) | `0` |
+| `abrir-navegador` | Abre o navegador do monitor visível (login/captcha) | `0` |
 | `publish` | Publica site + `status.json` na Netlify agora | `0`/`1` |
 | `doctor` | Valida a configuração | `0`/`1` |
 

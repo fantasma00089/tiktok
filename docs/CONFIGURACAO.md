@@ -74,9 +74,27 @@ No Windows, clicar no toast (ou no botão “Abrir vídeo”) abre o vídeo repo
 
 ## Provedores
 
-`PROVIDER` escolhe de onde vêm os dados. Todos devolvem a lista de reposts do mais recente para o mais antigo.
+`PROVIDER` escolhe de onde vêm os dados (padrão: `browser`). Todos devolvem a lista de reposts do mais recente para o mais antigo.
 
-### `mock` — simulação (padrão)
+### `browser` — navegador local (padrão, sem API)
+
+A cada ciclo o monitor abre o perfil num navegador invisível, clica na aba **Reposts** e lê a lista
+que o próprio site do TikTok carrega (`/api/repost/item_list`); se ela não vier, lê os links de vídeo
+da aba. Imagens, vídeos e fontes são bloqueados e o navegador é fechado ao final de cada ciclo.
+
+| Variável | Padrão | Descrição |
+|---|---|---|
+| `BROWSER_CHANNEL` | `msedge` no Windows, vazio nos outros | Navegador: `msedge`, `chrome` ou vazio (Chromium do Playwright) |
+| `BROWSER_HEADLESS` | `true` | `false` mostra a janela durante a verificação (útil para depurar) |
+| `BROWSER_TIMEOUT_SECONDS` | `45` | Tempo máximo para carregar o perfil |
+| `BROWSER_BLOCK_MEDIA` | `true` | Não carrega imagens, vídeos e fontes |
+| `BROWSER_PROFILE_DIR` | `data/browser-profile` | Perfil do navegador (cookies do TikTok) |
+
+Se o TikTok pedir captcha ou login, o painel mostra o erro. Feche o `iniciar.bat`, rode
+`abrir-navegador.bat` (ou `python -m repost_monitor abrir-navegador`), resolva na janela, feche-a e
+inicie de novo. Os cookies ficam salvos no perfil do navegador.
+
+### `mock` — simulação
 **Não consulta o TikTok**: reposts reais nunca aparecem neste modo, e o painel mostra um aviso.
 Lê `MOCK_FILE` (padrão `backend/data/mock_reposts.json`). Use `repost_monitor simulate` para inserir um repost.
 

@@ -76,7 +76,7 @@ class Settings:
     user_id: str = ""
 
     # Provedor de dados
-    provider: str = "mock"
+    provider: str = "browser"
     provider_options: dict[str, Any] = field(default_factory=dict)
 
     # Polling e resiliência
@@ -143,7 +143,7 @@ class Settings:
         problems = []
         if not self.username and not self.user_id:
             problems.append("Defina TIKTOK_USERNAME ou TIKTOK_USER_ID.")
-        if self.provider not in {"mock", "http", "apify", "tiktok_research"}:
+        if self.provider not in {"browser", "mock", "http", "apify", "tiktok_research"}:
             problems.append(f"PROVIDER desconhecido: {self.provider!r}")
         if bool(self.netlify_auth_token) != bool(self.netlify_site_id):
             problems.append("NETLIFY_AUTH_TOKEN e NETLIFY_SITE_ID devem ser definidos juntos.")
@@ -157,7 +157,7 @@ class Settings:
         env.update(overrides or {})
         g = env.get
 
-        provider = (g("PROVIDER") or "mock").strip().lower()
+        provider = (g("PROVIDER") or "browser").strip().lower()
         s = cls(
             username=(g("TIKTOK_USERNAME") or "").strip().lstrip("@"),
             user_id=(g("TIKTOK_USER_ID") or "").strip(),
@@ -193,6 +193,17 @@ class Settings:
 
 
 def _provider_options(provider: str, g) -> dict[str, Any]:
+    if provider == "browser":
+        from .providers.browser import TIKTOK_URL, default_channel
+
+        return {
+            "channel": g("BROWSER_CHANNEL") if g("BROWSER_CHANNEL") is not None else default_channel(),
+            "headless": _bool(g("BROWSER_HEADLESS"), True),
+            "block_media": _bool(g("BROWSER_BLOCK_MEDIA"), True),
+            "timeout": _int(g("BROWSER_TIMEOUT_SECONDS"), 45),
+            "profile_dir": _path(g("BROWSER_PROFILE_DIR"), BACKEND_DIR / "data" / "browser-profile"),
+            "base_url": (g("BROWSER_BASE_URL") or TIKTOK_URL).rstrip("/"),
+        }
     if provider == "http":
         return {
             "url": g("HTTP_API_URL") or "",

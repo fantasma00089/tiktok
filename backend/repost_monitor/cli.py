@@ -147,6 +147,19 @@ def cmd_publish(settings: Settings, args: argparse.Namespace) -> int:
     return EXIT_OK if data["ok"] else EXIT_ERROR
 
 
+def cmd_open_browser(settings: Settings, args: argparse.Namespace) -> int:
+    if settings.provider != "browser":
+        _print({"ok": False, "erro": "abrir-navegador só se aplica a PROVIDER=browser."})
+        return EXIT_ERROR
+    from .providers.browser import open_visible_browser
+
+    print("Abrindo o navegador. Faça login ou resolva o captcha, se o TikTok pedir, e FECHE a janela ao terminar.",
+          file=sys.stderr)
+    asyncio.run(open_visible_browser(settings.provider_options, settings.username))
+    _print({"ok": True, "mensagem": "Navegador fechado; cookies salvos para as próximas verificações."})
+    return EXIT_OK
+
+
 def cmd_doctor(settings: Settings, args: argparse.Namespace) -> int:
     from .notifiers.desktop import build_command
 
@@ -177,6 +190,7 @@ COMMANDS = {
     "test-notification": (cmd_test_notification, "Dispara uma notificação nativa de teste"),
     "simulate": (cmd_simulate, "Adiciona um repost falso (PROVIDER=mock) para testes"),
     "publish": (cmd_publish, "Publica o site + status.json na Netlify agora"),
+    "abrir-navegador": (cmd_open_browser, "Abre o navegador do monitor (login/captcha do TikTok)"),
     "doctor": (cmd_doctor, "Valida a configuração"),
 }
 

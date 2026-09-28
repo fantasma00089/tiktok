@@ -17,6 +17,7 @@ from ..models import Repost, iso, video_url
 log = logging.getLogger(__name__)
 
 VIDEO_ID_IN_URL = re.compile(r"/(?:video|photo|v)/(\d{8,})")
+AUTHOR_IN_URL = re.compile(r"/@([A-Za-z0-9._-]+)/(?:video|photo)/")
 
 # Nomes de campo usados pelas APIs mais comuns (TikTok web, tikwm, Apify, Research API).
 ID_FIELDS = (
@@ -150,6 +151,9 @@ def normalize_item(item: dict[str, Any], fields: dict[str, str] | None = None) -
     if not item_id:
         return None
     author = _to_text(first_value(item, fields.get("author_field", ""), AUTHOR_FIELDS))
+    if not author and url:
+        match = AUTHOR_IN_URL.search(url)
+        author = match.group(1) if match else None
     author = author.lstrip("@") if author else None
     if not url or not url.startswith("http"):
         url = video_url(item_id, author)
